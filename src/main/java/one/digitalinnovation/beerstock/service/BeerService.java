@@ -76,13 +76,38 @@ public class BeerService {
 
 //  Incremento
     public BeerDTO increment(Long id, int quantityToIncrement) throws BeerNotFoundException, BeerStockExceededException {
+//      Verifica se a cerveja existe
         Beer beerToIncrementStock = verifyIfExists(id);
+//      total de cervejas depois do incremento
         int quantityAfterIncrement = quantityToIncrement + beerToIncrementStock.getQuantity();
+//      Vai fazer todo o processo apenas se o total for menor que o maximo
         if (quantityAfterIncrement <= beerToIncrementStock.getMax()) {
+//          incrementa na cerveja
             beerToIncrementStock.setQuantity(beerToIncrementStock.getQuantity() + quantityToIncrement);
+//          salva a cerveja no banco de dados
             Beer incrementedBeerStock = beerRepository.save(beerToIncrementStock);
             return beerMapper.toDTO(incrementedBeerStock);
         }
         throw new BeerStockExceededException(id, quantityToIncrement);
     }
+
+//  Feito por Otavio Koike
+//  Decremento
+    public BeerDTO decrement(Long id, int quantityToIncrement) throws BeerNotFoundException, BeerStockExceededException {
+//      Verifica se a cerveja existe
+        Beer beerToDecrementStock = verifyIfExists(id);
+//      total de cervejas depois do decremento
+        int quantityAfterIncrement = beerToDecrementStock.getQuantity() - quantityToIncrement;
+//      Vai fazer todo o processo apenas se o total for maior que zero
+        if (quantityAfterIncrement >= 0) {
+//          Decrementa na cerveja
+            beerToDecrementStock.setQuantity(beerToDecrementStock.getQuantity() - quantityToIncrement);
+//          salva a cerveja no banco de dados
+            Beer decrementedBeerStock = beerRepository.save(beerToDecrementStock);
+            return beerMapper.toDTO(decrementedBeerStock);
+        }
+        throw new BeerStockExceededException(id, quantityToIncrement);
+    }
+
+
 }

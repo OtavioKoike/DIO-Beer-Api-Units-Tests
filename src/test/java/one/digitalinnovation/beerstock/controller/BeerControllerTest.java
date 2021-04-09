@@ -199,6 +199,7 @@ public class BeerControllerTest {
 //  Quando o DELETE é chamado com Id Valido, retorna status no Content
     void whenDELETEIsCalledWithValidIdThenNoContentStatusIsReturned() throws Exception {
         // given
+//      Cria uma cerveja com valores Default
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
 
         //when
@@ -227,16 +228,23 @@ public class BeerControllerTest {
     }
 
     @Test
+//  Quando chamar o caminho de incremento, retornar status ok
     void whenPATCHIsCalledToIncrementDiscountThenOKstatusIsReturned() throws Exception {
+//      Cria uma quantidade de cervejas para incrementar
         QuantityDTO quantityDTO = QuantityDTO.builder()
+//              seta a quantidade
                 .quantity(10)
                 .build();
 
+//      Cria uma cerveja com valores Default
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+//      Seta a quantidade total
         beerDTO.setQuantity(beerDTO.getQuantity() + quantityDTO.getQuantity());
 
+//      quando chamar o increment com id vlido, retornar a cerveja
         when(beerService.increment(VALID_BEER_ID, quantityDTO.getQuantity())).thenReturn(beerDTO);
 
+//      moca a chamada do incremento e retorna a cerveja incrementada
         mockMvc.perform(MockMvcRequestBuilders.patch(BEER_API_URL_PATH + "/" + VALID_BEER_ID + BEER_API_SUBPATH_INCREMENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(quantityDTO))).andExpect(status().isOk())
@@ -246,81 +254,91 @@ public class BeerControllerTest {
                 .andExpect(jsonPath("$.quantity", is(beerDTO.getQuantity())));
     }
 
-//    @Test
-//    void whenPATCHIsCalledToIncrementGreatherThanMaxThenBadRequestStatusIsReturned() throws Exception {
-//        QuantityDTO quantityDTO = QuantityDTO.builder()
-//                .quantity(30)
-//                .build();
-//
-//        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
-//        beerDTO.setQuantity(beerDTO.getQuantity() + quantityDTO.getQuantity());
-//
-//        when(beerService.increment(VALID_BEER_ID, quantityDTO.getQuantity())).thenThrow(BeerStockExceededException.class);
-//
-//        mockMvc.perform(patch(BEER_API_URL_PATH + "/" + VALID_BEER_ID + BEER_API_SUBPATH_INCREMENT_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .con(asJsonString(quantityDTO))).andExpect(status().isBadRequest());
-//    }
+    @Test
+//  Quando o caminho for chamado com incremento maior que max, retornar Bad Request
+    void whenPATCHIsCalledToIncrementGreatherThanMaxThenBadRequestStatusIsReturned() throws Exception {
+        QuantityDTO quantityDTO = QuantityDTO.builder()
+                .quantity(30)
+                .build();
 
-//    @Test
-//    void whenPATCHIsCalledWithInvalidBeerIdToIncrementThenNotFoundStatusIsReturned() throws Exception {
-//        QuantityDTO quantityDTO = QuantityDTO.builder()
-//                .quantity(30)
-//                .build();
-//
-//        when(beerService.increment(INVALID_BEER_ID, quantityDTO.getQuantity())).thenThrow(BeerNotFoundException.class);
-//        mockMvc.perform(patch(BEER_API_URL_PATH + "/" + INVALID_BEER_ID + BEER_API_SUBPATH_INCREMENT_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(quantityDTO)))
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    void whenPATCHIsCalledToDecrementDiscountThenOKstatusIsReturned() throws Exception {
-//        QuantityDTO quantityDTO = QuantityDTO.builder()
-//                .quantity(5)
-//                .build();
-//
-//        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
-//        beerDTO.setQuantity(beerDTO.getQuantity() + quantityDTO.getQuantity());
-//
-//        when(beerService.decrement(VALID_BEER_ID, quantityDTO.getQuantity())).thenReturn(beerDTO);
-//
-//        mockMvc.perform(patch(BEER_API_URL_PATH + "/" + VALID_BEER_ID + BEER_API_SUBPATH_DECREMENT_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(quantityDTO))).andExpect(status().isOk())
-//                .andExpect(jsonPath("$.name", is(beerDTO.getName())))
-//                .andExpect(jsonPath("$.brand", is(beerDTO.getBrand())))
-//                .andExpect(jsonPath("$.type", is(beerDTO.getType().toString())))
-//                .andExpect(jsonPath("$.quantity", is(beerDTO.getQuantity())));
-//    }
-//
-//    @Test
-//    void whenPATCHIsCalledToDEcrementLowerThanZeroThenBadRequestStatusIsReturned() throws Exception {
-//        QuantityDTO quantityDTO = QuantityDTO.builder()
-//                .quantity(60)
-//                .build();
-//
-//        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
-//        beerDTO.setQuantity(beerDTO.getQuantity() + quantityDTO.getQuantity());
-//
-//        when(beerService.decrement(VALID_BEER_ID, quantityDTO.getQuantity())).thenThrow(BeerStockExceededException.class);
-//
-//        mockMvc.perform(patch(BEER_API_URL_PATH + "/" + VALID_BEER_ID + BEER_API_SUBPATH_DECREMENT_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(quantityDTO))).andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void whenPATCHIsCalledWithInvalidBeerIdToDecrementThenNotFoundStatusIsReturned() throws Exception {
-//        QuantityDTO quantityDTO = QuantityDTO.builder()
-//                .quantity(5)
-//                .build();
-//
-//        when(beerService.decrement(INVALID_BEER_ID, quantityDTO.getQuantity())).thenThrow(BeerNotFoundException.class);
-//        mockMvc.perform(patch(BEER_API_URL_PATH + "/" + INVALID_BEER_ID + BEER_API_SUBPATH_DECREMENT_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(quantityDTO)))
-//                .andExpect(status().isNotFound());
-//    }
+        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+        beerDTO.setQuantity(beerDTO.getQuantity() + quantityDTO.getQuantity());
+
+        when(beerService.increment(VALID_BEER_ID, quantityDTO.getQuantity())).thenThrow(BeerStockExceededException.class);
+
+//      Arrumei o "content" que não estava funcionando na aula com "MockMvcRequestBuilders"
+        mockMvc.perform(MockMvcRequestBuilders.patch(BEER_API_URL_PATH + "/" + VALID_BEER_ID + BEER_API_SUBPATH_INCREMENT_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(quantityDTO))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void whenPATCHIsCalledWithInvalidBeerIdToIncrementThenNotFoundStatusIsReturned() throws Exception {
+        QuantityDTO quantityDTO = QuantityDTO.builder()
+                .quantity(30)
+                .build();
+
+        when(beerService.increment(INVALID_BEER_ID, quantityDTO.getQuantity())).thenThrow(BeerNotFoundException.class);
+
+//      Arrumei o "content" que não estava funcionando na aula com "MockMvcRequestBuilders"
+        mockMvc.perform(MockMvcRequestBuilders.patch(BEER_API_URL_PATH + "/" + INVALID_BEER_ID + BEER_API_SUBPATH_INCREMENT_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(quantityDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void whenPATCHIsCalledToDecrementDiscountThenOKstatusIsReturned() throws Exception {
+        QuantityDTO quantityDTO = QuantityDTO.builder()
+                .quantity(5)
+                .build();
+
+        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+//      No original ele estava somando
+        beerDTO.setQuantity(beerDTO.getQuantity() - quantityDTO.getQuantity());
+
+        when(beerService.decrement(VALID_BEER_ID, quantityDTO.getQuantity())).thenReturn(beerDTO);
+
+//      Arrumei o "content" que não estava funcionando na aula com "MockMvcRequestBuilders"
+        mockMvc.perform(MockMvcRequestBuilders.patch(BEER_API_URL_PATH + "/" + VALID_BEER_ID + BEER_API_SUBPATH_DECREMENT_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(quantityDTO))).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(beerDTO.getName())))
+                .andExpect(jsonPath("$.brand", is(beerDTO.getBrand())))
+                .andExpect(jsonPath("$.type", is(beerDTO.getType().toString())))
+                .andExpect(jsonPath("$.quantity", is(beerDTO.getQuantity())));
+    }
+
+    @Test
+    void whenPATCHIsCalledToDEcrementLowerThanZeroThenBadRequestStatusIsReturned() throws Exception {
+        QuantityDTO quantityDTO = QuantityDTO.builder()
+                .quantity(60)
+                .build();
+
+        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+//      No original ele estava somando
+        beerDTO.setQuantity(beerDTO.getQuantity() - quantityDTO.getQuantity());
+
+        when(beerService.decrement(VALID_BEER_ID, quantityDTO.getQuantity())).thenThrow(BeerStockExceededException.class);
+
+//      Arrumei o "content" que não estava funcionando na aula com "MockMvcRequestBuilders"
+        mockMvc.perform(MockMvcRequestBuilders.patch(BEER_API_URL_PATH + "/" + VALID_BEER_ID + BEER_API_SUBPATH_DECREMENT_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(quantityDTO))).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void whenPATCHIsCalledWithInvalidBeerIdToDecrementThenNotFoundStatusIsReturned() throws Exception {
+        QuantityDTO quantityDTO = QuantityDTO.builder()
+                .quantity(5)
+                .build();
+
+        when(beerService.decrement(INVALID_BEER_ID, quantityDTO.getQuantity())).thenThrow(BeerNotFoundException.class);
+
+    //      Arrumei o "content" que não estava funcionando na aula com "MockMvcRequestBuilders"
+        mockMvc.perform(MockMvcRequestBuilders.patch(BEER_API_URL_PATH + "/" + INVALID_BEER_ID + BEER_API_SUBPATH_DECREMENT_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(quantityDTO)))
+                .andExpect(status().isNotFound());
+    }
 }
